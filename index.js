@@ -2,6 +2,8 @@ const leftScreenEdge = 20, groundTileWidth=10;
 var backgroundImg, ground, bird0, bird1, bird2;
 var floorcounter = 0;
 
+// const activationFuncList = [reluAF, sigmoid];							// this must be equal to the number of layers
+
 var population = new Population();
 var pipes = new Array();
 
@@ -18,6 +20,7 @@ function setup() {
 		pipes[i] = new Pipe();
 	}
 	pipes[0].active = true;
+	Bird.setActivation([leakyReluAF, tanhAF, tanhAF, sigmoidAF]);
 }
 
 function draw(){
@@ -36,7 +39,7 @@ function draw(){
 		Bird.display(population.species.yPos, population.species.velocity);
 		population.species.updateVelocity();
 		population.species.isAlive = collisionDetect(population.species.yPos);
-		console.log(population.species);
+		// console.log(population.species);
 	}
 	spwanPipe();
 	drawWhiteMask();

@@ -1,6 +1,7 @@
 const leftScreenEdge = 20, groundTileWidth=10;
 var backgroundImg, ground, bird0, bird1, bird2;
-var floorcounter = 0;
+var floorcounter = 0, neat = false;
+var generation = 1;
 
 // const activationFuncList = [reluAF, sigmoid];							// this must be equal to the number of layers
 
@@ -20,29 +21,58 @@ function setup() {
 		pipes[i] = new Pipe();
 	}
 	pipes[0].active = true;
-	Bird.setActivation([leakyReluAF, tanhAF, tanhAF, sigmoidAF]);
+	Bird.setActivation([tanhAF, sigmoidAF, sigmoidAF]);
+	fill(0);
+	stroke(0);
+	textSize(20);
+	let gen = "Generation ="+generation;
+	let pop = "Population ="+totalPopulation;
+	text(gen,700,630);
+	text(pop,900,630);
 }
 
 function draw(){
-
-	// gameFrame();
-	// drawNeuralNetworkFrame();
 	// draw the background
-	imageMode(CORNER);
-	image(backgroundImg, leftScreenEdge, 0,600,600);
-	for(let i=0; i<2; i++){
-		pipes[i].move();
-		if(pipes[i].active)Pipe.displayPipe(pipes[i].pipePosition, pipes[i].length);
+	if(!neat){
+		imageMode(CORNER);
+		image(backgroundImg, leftScreenEdge, 0,600,600);
+		for(let i=0; i<2; i++){
+			pipes[i].move(i);
+			if(pipes[i].active)Pipe.displayPipe(pipes[i].pipePosition, pipes[i].length);
+		}
+		drawfloor();
+		drawWhiteMask();
+		population.step();
+		spwanPipe();
+		if(deadBirdCounter == totalPopulation){
+			neat = true;
+		}
+	}else{
+		population.evaluteFitness();
+		population.newGeneration();
+		population.mutate();
+		pipes.splice(0, pipes.length);
+		for(let i=0; i<2;i++){
+			pipes[i] = new Pipe();
+		}
+		pipes[0].active = true;
+		Pipe.activePipe = 0;
+		generation++;
+		maxfitness=0;
+		indexOfMaxFitness=0;
+		deadBirdCounter = 0;
+		neat = false;
+		background(255);
+		textSize(20);
+		fill(0);
+		stroke(0);
+		let gen = "Generation ="+generation;
+		let pop = "Population ="+totalPopulation;
+		text(gen,700,630);
+		text(pop,850,630);
 	}
-	drawfloor();
-	if(population.species.isAlive){
-		Bird.display(population.species.yPos, population.species.velocity);
-		population.species.updateVelocity();
-		population.species.isAlive = collisionDetect(population.species.yPos);
-		// console.log(population.species);
-	}
-	spwanPipe();
-	drawWhiteMask();
+
+	// drawAxion(population.species[0].neuralNetwork);
 }
 
 function spwanPipe(){
@@ -91,11 +121,11 @@ function drawfloor(){
 }
 
 // only used for debugging
-function keyPressed(){
-	if(keyCode == 32){
-		population.species.jump();
-	} 
-}
+// function keyPressed(){
+// 	if(keyCode == 32){
+// 		population.species.jump();
+// 	} 
+// }
 
 function drawWhiteMask(){
 	push();
@@ -103,8 +133,9 @@ function drawWhiteMask(){
 	stroke(255);
 	fill(255);
 	rect(0,0,leftScreenEdge,650);
-	rect(620,0,50,650);
+	rect(620,0,880,600);
 	pop();
+	fill(0);
 }
 
 // function gameFrame(){

@@ -1,7 +1,8 @@
-const space = 200, pipeWidth=60, pipeSpace = 160;
+const space = 200, pipeWidth=60, pipeSpace = 120;
 
 class Pipe{
 	static activePipe = 0;
+	static pipeCrossed = false;
 	static pipeVelocity=3.3;												//used to index the active pipe(the once which needs to be avoided)
 	constructor(){
 		this.pipePosition = 620;
@@ -9,11 +10,17 @@ class Pipe{
 		this.length = (Math.random()*0.6)+0.08;
 	}
 	
-	move(){
+	move(index){
 		if(this.active)this.pipePosition -=Pipe.pipeVelocity;
-		if(this.pipePosition<(Bird.xPos-20)){
-			if(Pipe.activePipe==0)Pipe.activePipe=1;					//this part is used to toggle between the two pipes to select the active pipe
-			else if(Pipe.activePipe==1)Pipe.activePipe=0;				// the one which is the next obstacle 
+		if((this.pipePosition<(Bird.xPos-80))&&Pipe.activePipe==index){
+			if(Pipe.activePipe==0){
+				Pipe.activePipe = 1; 											//this part is used to toggle between the two pipes to select the active pipe
+				Pipe.pipeCrossed = true;
+			}					
+			else if(Pipe.activePipe==1){
+				Pipe.activePipe=0;											// the one which is the next obstacle 
+				Pipe.pipeCrossed = true;
+			}
 		}
 
 		if(this.pipePosition<(20-pipeWidth)){

@@ -3,15 +3,17 @@
 class Bird{
 	static xPos = 250;
 	static stepCounter = 1;
-	static activationFuncList = new Array();
+	static activationFuncList;
 
 	constructor(layers){
 		this.yPos = 300;
+		this.pipeScore = 0;
+		this.maxFitness = 0;  
 		this.velocity = 0;							// velocity of the bird in the y direction
 		this.isAlive = true;						// true is the bird is still alive
 		this.step = 0;								// increase step for every frame the bird is alive
-		this.nodes = layers[0];						// the layers arguments takes in an array, the array length sould be the number of layer i.e.
-		this.totalLayer = layers[0].length			// layers.length if 3 means 3 leayers, [6, 3, 1] 6 nodes in first layers, 3 nodes in 2nd layer and so on 
+		this.nodes = layers;						// the layers arguments takes in an array, the array length sould be the number of layer i.e.
+		this.totalLayer = layers.length				// layers.length if 3 means 3 leayers, [6, 3, 1] 6 nodes in first layers, 3 nodes in 2nd layer and so on 
 		this.nodeValue = new Array();				// nodeValue contains the actual value i.e input node contains the input values and output node
 													// constains the output value 
 		this.neuralNetwork = new Array();			// the neuralNetwork is array of Tensor object(instance of Tensor class) consist of Matrix
@@ -31,8 +33,38 @@ class Bird{
 	}
 	
 	getInput(){
-		this.nodeValue[0] = new Array();			// create array for input nodes
+		let b = pipes[Pipe.activePipe].pipePosition-Bird.xPos;
+		let d2 = this.yPos-(600-600*pipes[Pipe.activePipe].length);
+		let d3 = this.yPos-(630-600*pipes[Pipe.activePipe].length-pipeSpace);
 
+		this.nodeValue[0] = new Array();			// create array for input nodes
+		for(let i=0; i<this.nodes[0]; i++){
+			switch(i){
+				case 4:
+					this.nodeValue[0][i] = 600-this.yPos;
+					break;
+				case 0:
+					this.nodeValue[0][i] = d2; 
+					break;
+				case 1:
+					this.nodeValue[0][i] = d3;
+					break;
+				case 2:
+					this.nodeValue[0][i] = Math.sqrt(Math.pow(b,2)+Math.pow(d2,2));
+					break;
+				case 3:
+					this.nodeValue[0][i] = Math.sqrt(Math.pow(b,2)+Math.pow(d3,2));
+					break;
+				case 5:
+					this.nodeValue[0][i] = b;
+					break;
+				case 6:
+					this.nodeValue[0][i] = this.velocity;
+					break;
+				default:
+					this.nodeValue[0][i] = 1;
+			}
+		}
 	}
 
 	// function that implements the feedForward algorithm
@@ -46,17 +78,19 @@ class Bird{
 	// and to update the velocity of the bird
 	updateVelocity(){
 		if(this.isAlive){
-			this.velocity+=.6;
-			if(this.velocity>=13)this.velocity = 13;
+			this.velocity+=1;
+			if(this.velocity>=14)this.velocity = 14;
 			this.yPos += this.velocity; 
-			this.step+=1;
+			if(this.step<50){
+				this.step+=1;
+			}
 		}
 	}
 
 	// jump acton is only performed when there is need to
 	jump(){
 		if(this.isAlive){
-			this.velocity = -9;
+			this.velocity = -8;
 			this.yPos += this.velocity;			
 		}
 	}

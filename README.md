@@ -12,7 +12,7 @@ the genetic material is the best neural network that can play the game.
 
 
 
-<img src="https://github.com/KurejiMilan/FlappyBirdNEAT/blob/main/img/flappyWireframe.jpg" alt="flappy bird wireframe" height="150px" width="150px">
+<img src="https://github.com/KurejiMilan/FlappyBirdNEAT/blob/main/img/flappyWireframe.jpg" alt="flappy bird wireframe" height="400px" width="600px">
 
 ## Technologies and programming language 
 * Javascript
